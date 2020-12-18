@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="781a5540-200f-4fd7-9c36-236602f668de" >
+		<http:listener-connection host="localhost" port="8087" />
+	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="a7284e16-2b2a-42b5-a74d-4868fd4b876b" name="mule.env" value="Stage" />
+	<configuration-properties doc:name="Configuration properties" doc:id="dc8003be-384c-468c-a87b-667ace132797" file="Config/${mule.env}.yaml" />
+	<flow name="helloworldFlow" doc:id="60e87a93-3e19-4561-af31-c44af0ea0684" >
+		<http:listener doc:name="Listener" doc:id="a4b81ee2-c0d5-487b-9145-9b323f4f4ede" config-ref="HTTP_Listener_config" path="/${http.path}"/>
+		<ee:transform doc:name="Transform Message" doc:id="c4f153e9-6cb1-49a8-a3d6-2a93beebf709" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+employee:{
+	empname:payload.empName,
+	empId:payload.empId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="efeb30c4-8d07-4ad5-8b64-726160f7e86a" message="#[payload]"/>
+	</flow>
+</mule>
